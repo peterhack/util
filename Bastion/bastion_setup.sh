@@ -2,7 +2,7 @@
 
 # Utility configuration
 
-sudo yum install wget 
+sudo yum -y install wget 
 
 cd ~/util
 # INSTALL JQ
