@@ -2,7 +2,8 @@
 
 # Utility configuration
 
-sudo yum -y install wget 
+# Uncomment below if needed
+#sudo yum -y install wget 
 
 cd ~/util
 # INSTALL JQ
@@ -38,7 +39,7 @@ tar -zxf openshift-origin.tar.gz
 rm -rf ~/util/openshift-origin*
 echo "installed oc & kubectl"
 
-# CLONE OPENSHIFT-ANSIBLE REPO
-cd ~
-  git clone https://github.com/berndonline/openshift-ansible.git
-echo "cloned openshift-ansible"  
+# CLONE OPENSHIFT-ANSIBLE REPO if required Uncomment below
+#cd ~
+#  git clone https://github.com/berndonline/openshift-ansible.git
+#echo "cloned openshift-ansible"  
