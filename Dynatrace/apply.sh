@@ -39,10 +39,10 @@ echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   if [ $(oc get namespace | grep dynatrace | wc -l) == 0 ];
   then
-    oc adm new-project dynatrace 
-    oc annotate namespace dynatrace openshift.io/node-selector="" 
+    oc adm new-project --node-selector="" dynatrace  
   sed -i 's/ENVIRONMENTID/'"$DTENV"'/' cr.yaml
-  oc create -f https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/master/deploy/openshift.yaml
+  LATEST_RELEASE=$(curl -s https://api.github.com/repos/dynatrace/dynatrace-oneagent-operator/releases/latest | grep tag_name | cut -d '"' -f 4)
+  oc create -f https://raw.githubusercontent.com/Dynatrace/dynatrace-oneagent-operator/$LATEST_RELEASE/deploy/openshift.yaml
   oc -n dynatrace create secret generic oneagent --from-literal="apiToken=$DTAPI" --from-literal="paasToken=$DTPAAS"
   oc create -f ./cr.yaml
   fi
