@@ -10,7 +10,7 @@ print_info "Starting installation of keptn"
 
 #if [[ -z "${KEPTN_INSTALL_ENV}" ]]; then
 #  # Variables for gcloud
-##  if [[ -z "${CLUSTER_NAME}" ]]; then
+#  if [[ -z "${CLUSTER_NAME}" ]]; then
 #    print_debug "CLUSTER_NAME is not set, take it from creds.json"
 #    CLUSTER_NAME=$(cat creds.json | jq -r '.clusterName')
 #    verify_variable "$CLUSTER_NAME" "CLUSTER_NAME is not defined in environment variable nor in creds.json file." 
@@ -28,8 +28,8 @@ print_info "Starting installation of keptn"
 #  # verify_install_step $? "Could not connect to cluster. Please check the values for your Cluster Name, GKE Project, and Cluster Zone during the credentials setup."
 #  print_info "Connection to cluster successful"
 #fi
-#
-## Variables for installing Istio and Knative
+
+# Variables for installing Istio and Knative
 #if [[ -z "${CLUSTER_IPV4_CIDR}" ]]; then
 #  print_debug "CLUSTER_IPV4_CIDR is not set, retrieve it using gcloud."
 #  CLUSTER_IPV4_CIDR=$(gcloud container clusters describe ${CLUSTER_NAME} --zone=${CLUSTER_ZONE} | yq r - clusterIpv4Cidr)
@@ -38,7 +38,7 @@ print_info "Starting installation of keptn"
 #  fi
 #  verify_variable "$CLUSTER_IPV4_CIDR" "CLUSTER_IPV4_CIDR is not defined in environment variable nor could it be retrieved using gcloud." 
 #fi
-#
+
 #if [[ -z "${SERVICES_IPV4_CIDR}" ]]; then
 #  print_debug "SERVICES_IPV4_CIDR is not set, retrieve it using gcloud."
 #  SERVICES_IPV4_CIDR=$(gcloud container clusters describe ${CLUSTER_NAME} --zone=${CLUSTER_ZONE} | yq r - servicesIpv4Cidr)
@@ -47,8 +47,9 @@ print_info "Starting installation of keptn"
 #  fi
 #  verify_variable "$SERVICES_IPV4_CIDR" "SERVICES_IPV4_CIDR is not defined in environment variable nor could it be retrieved using gcloud." 
 #fi
-#
-## Variables for creating cluster role binding
+
+
+# Variables for creating cluster role binding
 #if [[ -z "${GCLOUD_USER}" ]]; then
 #  print_debug "GCLOUD_USER is not set, retrieve it using gcloud."
 #  GCLOUD_USER=$(gcloud config get-value account)
@@ -58,8 +59,6 @@ print_info "Starting installation of keptn"
 #  verify_variable "$GCLOUD_USER" "GCLOUD_USER is not defined in environment variable nor could it be retrieved using gcloud." 
 #fi
 
-CLUSTER_IPV4_CIDR=172.30.0.0/16
-SERVICES_IPV4_CIDR=10.1.0.0/16
 # Test kubectl get namespaces
 print_info "Testing connection to Kubernetes API"
 kubectl get namespaces
@@ -67,25 +66,24 @@ verify_kubectl $? "Could not connect to Kubernetes API."
 print_info "Connection to Kubernetes API successful"
 
 # Grant cluster admin rights to gcloud user
-# TODO create vs apply
-#kubectl create clusterrolebinding keptn-cluster-admin-binding --clusterrole=cluster-admin --user=$GCLOUD_USER
-#verify_kubectl $? "Cluster role binding could not be created."
+# kubectl create clusterrolebinding keptn-cluster-admin-binding --clusterrole=cluster-admin --user=$GCLOUD_USER
+kubectl create clusterrolebinding keptn-cluster-admin-binding --clusterrole=cluster-admin --user=admin
+verify_kubectl $? "Cluster role binding could not be created."
 
-# Create K8s namespaces
-kubectl apply -f ../manifests/keptn/keptn-namespace.yml
+# Create keptn namespaces
+kubectl apply -f ../manifests/keptn/namespace.yaml
 verify_kubectl $? "Creating keptn namespace failed."
 
-# Create container registry
-#print_info "Creating container registry"
-#./setupContainerRegistry.sh
-#verify_install_step $? "Creating container registry failed."
-#print_info "Creating container registry done"
-
+#git clone https://github.com/openshift-cloud-functions/knative-operators.git
+#oc adm policy add-cluster-role-to-user cluster-admin -z knative-eventing-operator -n knative-eventing
+#./knative-operators/etc/scripts/install.sh
+    
 # Install Istio service mesh
-#print_info "Installing Istio"
+# print_info "Installing Istio"
 #./setupIstio.sh $CLUSTER_IPV4_CIDR $SERVICES_IPV4_CIDR
+#./setupIstio-ocp.sh $CLUSTER_IPV4_CIDR $SERVICES_IPV4_CIDR
 #verify_install_step $? "Installing Istio failed."
-#print_info "Installing Istio done"
+#rint_info "Installing Istio done"
 
 # Install knative core components
 #print_info "Installing Knative"
@@ -100,10 +98,10 @@ verify_install_step $? "Installing keptn failed."
 print_info "Installing keptn done"
 
 # Install keptn services
-print_info "Wear uniform"
-./wearUniform.sh
-verify_install_step $? "Installing keptn's uniform failed."
-print_info "Keptn wears uniform"
+#print_info "Wear uniform"
+#./wearUniform.sh
+#verify_install_step $? "Installing keptn's uniform failed."
+#print_info "Keptn wears uniform"
 
 # Install done
 print_info "Installation of keptn complete."
