@@ -21,7 +21,7 @@ metadata:
       any SELinux context.  WARNING: this is the most relaxed SCC and should be used
       only for cluster administration. Grant with caution.'
   creationTimestamp: null
-  name: privileged
+  name: hostpath
 priority: 10
 readOnlyRootFilesystem: false
 requiredDropCapabilities: [] 
